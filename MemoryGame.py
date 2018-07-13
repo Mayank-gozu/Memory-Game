@@ -10,13 +10,17 @@ def new_game():
     lst = range(8)+range(8)
     random.shuffle(lst)
     count = 0
-    state1i = 0
-    state2i = 0
+    #state1i = 0
+    #state2i = 0
     state = 0
     turns = 0
-    exposed = [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False]
+    exposed = [False]*16
+
     label.set_text("Turns: "+ str(turns))
     label1.set_text("Result Unkown!")
+
+def detect_card(pos):
+    return pos[0]// 50
 
 
 
@@ -28,32 +32,29 @@ def mouseclick(pos):
     # add game state logic here
     #check to see if click was on line
     if pos[0] % 50 !=0 and pos[1]%100 !=0 and pos[0] !=0 and pos[1]!=0:
-        i = pos[0] // 50
+        if exposed[detect_card(pos)]:
+            return None
+        turns += 1
         if state == 0:
-            exposed[i] = True
+            card1 = detect_card(pos)
+            exposed[card1] = True
             state = 1
-            card1 = lst[i]
-            state1i = i
-            turns = turns+1
+            #state1i = i
+            #turns = turns+1
         elif state == 1:
+            card2 = detect_card(pos)
             state = 2
-            exposed[i] = True
-            card2 = lst[i]
-            state2i = i
-
+            exposed[card2] = True
+            #card2 = lst[i]
+            #state2i = i
         else:
-            if card1 != card2:
-                exposed[state1i] = False
-                exposed[state2i] = False
-            elif card1==card2:
-                count = count+1
-                print count
-            exposed[i] = True
-            card1 = lst[i]
-            turns = turns+1
-            state1i = i
-            state2i = 0
+            if lst[card1] != lst[card2]:
+                exposed[card1] = False
+                exposed[card2] = False
+            card1 = detect_card(pos)
+            exposed[card1] = True
             state = 1
+
         label.set_text("Turns: "+ str(turns))
         if count == 8:
             label1.set_text("You Won")
